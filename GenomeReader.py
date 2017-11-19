@@ -33,8 +33,9 @@ hmm_7_state = hmm(init_probs_7_state, trans_probs_7_state, emission_probs_7_stat
 
 
 
-
-def convertAnnToState(ann):
+"""
+def convertAnnToState(annotation):
+    ann = annotation[]
     state = {}
     cCount = 2
     rCount = 4
@@ -52,9 +53,11 @@ def convertAnnToState(ann):
             if rCount == 7:
                 rCount = 4
     return state
+    """
 
-
-
+def translate_indices_to_path(indices):
+    mapping = ['C', 'C', 'C', 'N', 'R', 'R', 'R']
+    return ''.join([mapping[i] for i in indices])
 
 
 def translate_indices_to_observations(indices):
@@ -102,4 +105,4 @@ def read_fasta_file(filename):
         sequences[name] = ''.join(lines)
     return sequences
 
-print(convertAnnToState(read_fasta_file("true-ann1.fa")))
+trans = (translate_indices_to_path(read_fasta_file("true-ann1.fa")))
