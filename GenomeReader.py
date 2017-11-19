@@ -3,7 +3,7 @@ class hmm:
         self.init_probs = init_probs
         self.trans_probs = trans_probs
         self.emission_probs = emission_probs
-
+noStates = 7
 
 
 init_probs_7_state = [0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00]
@@ -107,21 +107,32 @@ def read_fasta_file(filename):
     return sequences[list(sequences.keys())[0]]
 
 def countEmissionProbs(genome, annotation):
-    probs = make_table(7,4)
+    probs = make_table(noStates,4)
     for i in range(0,len(genome)):
 
         probs[annotation[i]][genome[i]] += 1
-    for n in range(0,7):
+    for n in range(0,noStates):
         total = sum(probs[n])
         for m in range(0,4):
             probs[n][m] = probs[n][m]/total
-        print(sum(probs[n]))
+
+    return probs
+
+def countTransisionProbs(annotation):
+    probs = make_table(noStates,noStates)
+    for i in range(0,len(annotation)-1):
+        probs[annotation[i]][annotation[i+1]] += 1
+    for n in range(0,noStates):
+        total = sum(probs[n])
+        for m in range(0,noStates):
+            probs[n][m] = probs[n][m]/total
+
     return probs
 
 
 
-genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa"))
-ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
+genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa")+read_fasta_file("genome2.fa"))
+ann1 = convertAnnToState(read_fasta_file("true-ann1.fa")+read_fasta_file("true-ann2.fa"))
 print(countEmissionProbs(genome1,ann1))
-
+print(countTransisionProbs(ann1))
 
