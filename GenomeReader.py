@@ -137,7 +137,8 @@ def viterbi(initialProb, transProbs, emProbs, genome):
     T2 = make_table(noStates, T)
 
     for i in range(0,noStates):
-        T1[i][0] = emProbs[i][genome[0]]*initialProb[i]
+        if (emProbs[i][genome[0]] != 0 and initialProb[i] != 0):
+            T1[i][0] = np.log(emProbs[i][genome[0]])+np.log(initialProb[i])
         T2[i][0] = 0
 
     p = 0
@@ -147,17 +148,19 @@ def viterbi(initialProb, transProbs, emProbs, genome):
             p=0
             print(str(int(i/T*100)) + "%")
         for j in range(0,noStates):
-            best = 0
+            best = -np.inf
             bestk = 0
+
             for k in range(0,noStates):
-                temp = T1[k][i-1]*transProbs[k][j]*emProbs[j][genome[i]]
+                if transProbs[k][j] != 0:
+                    temp = T1[k][i-1]+np.log(transProbs[k][j])
 
                 #print("T1:" + str(T1[k][i-1]) +"  TransP:"+ str(transProbs[k][j]) +"   emProb:"+ str(emProbs[j][genome[i]]))
 
-                if temp>best:
-                    best = temp
-                    bestk = k
-            T1[j][i] = best
+                    if temp>best:
+                        best = temp
+                        bestk = k
+            T1[j][i] = best+np.log(emProbs[j][genome[i]])
             T2[j][i] = bestk
     z=[0]*T
     x=[0]*T
@@ -180,5 +183,5 @@ genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa")+read_f
 ann1 = convertAnnToState(read_fasta_file("true-ann1.fa")+read_fasta_file("true-ann2.fa"))
 emProbs = countEmissionProbs(genome1,ann1)
 transProbs = countTransisionProbs(ann1)
-result = viterbi(init_probs_7_state,transProbs,emProbs,genome1[0:100000])
+result = viterbi(init_probs_7_state,transProbs,emProbs,genome1[0:10000])
 print(result)
