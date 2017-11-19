@@ -67,8 +67,6 @@ def translate_indices_to_observations(indices):
 def translate_path_to_indices(path):
     return list(map(lambda x: int(x), path))
 
-def translate_indices_to_path(indices):
-    return ''.join([str(i) for i in indices])
 
 def make_table(m, n):
     """Make a table with `m` rows and `n` columns filled with zeros."""
@@ -105,4 +103,4 @@ def read_fasta_file(filename):
         sequences[name] = ''.join(lines)
     return sequences
 
-trans = (translate_indices_to_path(read_fasta_file("true-ann1.fa")))
+print(translate_indices_to_path(read_fasta_file("true-ann1.fa")))
