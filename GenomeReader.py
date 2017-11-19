@@ -1,3 +1,5 @@
+import numpy as np
+
 class hmm:
     def __init__(self, init_probs, trans_probs, emission_probs):
         self.init_probs = init_probs
@@ -6,7 +8,7 @@ class hmm:
 noStates = 7
 
 
-init_probs_7_state = [0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00]
+init_probs_7_state = [0.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00]
 
 trans_probs_7_state = [
     [0.00, 0.00, 0.90, 0.10, 0.00, 0.00, 0.00],
@@ -129,10 +131,54 @@ def countTransisionProbs(annotation):
 
     return probs
 
+def viterbi(initialProb, transProbs, emProbs, genome):
+    T = len(genome)
+    T1 = make_table(noStates, T)
+    T2 = make_table(noStates, T)
+
+    for i in range(0,noStates):
+        T1[i][0] = emProbs[i][genome[0]]*initialProb[i]
+        T2[i][0] = 0
+
+    p = 0
+    for i in range(1,T):
+        p+=1
+        if p==10000:
+            p=0
+            print(str(int(i/T*100)) + "%")
+        for j in range(0,noStates):
+            best = 0
+            bestk = 0
+            for k in range(0,noStates):
+                temp = T1[k][i-1]*transProbs[k][j]*emProbs[j][genome[i]]
+
+                #print("T1:" + str(T1[k][i-1]) +"  TransP:"+ str(transProbs[k][j]) +"   emProb:"+ str(emProbs[j][genome[i]]))
+
+                if temp>best:
+                    best = temp
+                    bestk = k
+            T1[j][i] = best
+            T2[j][i] = bestk
+    z=[0]*T
+    x=[0]*T
+    best = 0
+    bestk = 0
+    for k in range(0, noStates):
+        temp = T1[k][T-1]
+        if temp>best:
+            best = temp
+            bestk = k
+    x[T-1] = bestk
+    for j in range(1,T+1):
+        i=T-j
+        x[i-1] = T2[x[i]][i]
+    return x
+
 
 
 genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa")+read_fasta_file("genome2.fa"))
 ann1 = convertAnnToState(read_fasta_file("true-ann1.fa")+read_fasta_file("true-ann2.fa"))
-print(countEmissionProbs(genome1,ann1))
-print(countTransisionProbs(ann1))
-
+emProbs = countEmissionProbs(genome1,ann1)
+transProbs = countTransisionProbs(ann1)
+result = viterbi(init_probs_7_state,transProbs,emProbs,genome1[0:100000])
+print(result)
