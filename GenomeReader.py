@@ -106,5 +106,17 @@ def read_fasta_file(filename):
         sequences[name] = ''.join(lines)
     return sequences[list(sequences.keys())[0]]
 
-print( translate_observations_to_indices(read_fasta_file("genome1.fa")))
+    def countEmissionProbs(genome, annotation):
+        probs = make_table(7,4)
+        for i in range(0,len(genome)):
+            probs[annotation[i],genome[i]] += 1
+        for n in range(0,6):
+            totalt = sum(probs[n,])
+            
+
+
+genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa"))
+ann1 = convertAnnToState("true-ann.fa")
+
+
 
