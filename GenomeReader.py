@@ -35,19 +35,19 @@ hmm_7_state = hmm(init_probs_7_state, trans_probs_7_state, emission_probs_7_stat
 
 
 def convertAnnToState(annotation):
-    ann = annotation["true-ann1"]
+    ann = annotation[list(annotation.keys())[0]]
     state = []
     cCount = 2
     rCount = 4
     for i in range(0,len(ann)):
-        if ann[i] == "N":
+        if ann[i] == 'N':
             state.append(3)
-        if ann[i] == "C":
+        if ann[i] == 'C':
             state.append(cCount)
             cCount -= 1
             if cCount==-1:
                 cCount = 2
-        if ann[i] == "R":
+        if ann[i] == 'R':
             state.append(rCount)
             rCount += 1
             if rCount == 7:
@@ -103,4 +103,4 @@ def read_fasta_file(filename):
         sequences[name] = ''.join(lines)
     return sequences
 
-print = (convertAnnToState(read_fasta_file("true-ann1.fa")))
+print (convertAnnToState(read_fasta_file("true-ann1.fa")))
