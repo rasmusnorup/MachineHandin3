@@ -104,3 +104,6 @@ def read_fasta_file(filename):
     return sequences
 
 print (convertAnnToState(read_fasta_file("true-ann1.fa")))
+
+"""
+hallo"""
