@@ -33,9 +33,12 @@ hmm_7_state = hmm(init_probs_7_state, trans_probs_7_state, emission_probs_7_stat
 
 
 
+def translate_observations_to_indices(obs):
+    mapping = {'a': 0, 'c': 1, 'g': 2, 't': 3}
+    return [mapping[symbol.lower()] for symbol in obs]
 
-def convertAnnToState(annotation):
-    ann = annotation[list(annotation.keys())[0]]
+
+def convertAnnToState(ann):
     state = []
     cCount = 2
     rCount = 4
@@ -101,9 +104,7 @@ def read_fasta_file(filename):
     sequences = {}
     for name, lines in sequences_lines.items():
         sequences[name] = ''.join(lines)
-    return sequences
+    return sequences[list(sequences.keys())[0]]
 
-print (convertAnnToState(read_fasta_file("true-ann1.fa")))
+print( translate_observations_to_indices(read_fasta_file("genome1.fa")))
 
-"""
-hallo"""
