@@ -177,11 +177,55 @@ def viterbi(initialProb, transProbs, emProbs, genome):
         x[i-1] = T2[x[i]][i]
     return x
 
+#def codonCountEmissionProbs(genome, states):
 
 
-genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa")+read_fasta_file("genome2.fa"))
-ann1 = convertAnnToState(read_fasta_file("true-ann1.fa")+read_fasta_file("true-ann2.fa"))
+def codonAnotationToStates(annotation):
+    result = []
+    i = 0
+    isCoding = False
+    isRCoding = False
+    while i<len(annotation):
+        if annotation[i] == "N":
+            result.append(0)
+            i+=1
+        elif annotation[i] == "C":
+            if isCoding == False:
+                result.append(1)
+                isCoding = True
+            else:
+                if annotation[i+3] != "C":
+                    result.append(3)
+                    isCoding = False
+                else:
+                    result.append(2)
+            i += 3
+        elif annotation[i] == "R":
+            if isRCoding == False:
+                result.append(6)
+                isRCoding = True
+            else:
+                if annotation[i + 3] != "R":
+                    result.append(4)
+                    isCoding = False
+                else:
+                    result.append(5)
+            i += 3
+    return result
+
+
+# state 0=noncoding, 1=start, 2=code, 3=stop, 4=Rstart, 5=Rcode, 6=Rstop
+# Remember that Rstop comes before Rstart
+
+genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa"))
+genome2 = translate_observations_to_indices(read_fasta_file("genome2.fa"))
+trueann1 = read_fasta_file("true-ann1.fa")
+trueann2 = read_fasta_file("true-ann2.fa")
+ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
 emProbs = countEmissionProbs(genome1,ann1)
 transProbs = countTransisionProbs(ann1)
-result = viterbi(init_probs_7_state,transProbs,emProbs,genome1[0:10000])
-print(result)
+result = viterbi(init_probs_7_state,transProbs,emProbs,genome2)
+learnann=translate_indices_to_path(result)
+print(compute_accuracy(trueann2,learnann))
+#print(result)
+#print(translate_indices_to_path(result))
