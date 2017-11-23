@@ -4,7 +4,7 @@ import numpy as np
 noStates = 19
 
 
-init_probs_19_state = [1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+init_probs_19_state = [1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
 
 #States: 0:N 1-2-3:Start 4-5-6:Code 7-8-9:Stop 10-11-12:Rstart 13-14-15:RCode 16-17-18:Rstop
 
@@ -44,10 +44,83 @@ def convertAnnToState(ann):
             i += 3
     return state
 
-def translate_indices_to_path(indices):
-    mapping = ['C', 'C', 'C', 'N', 'R', 'R', 'R']
-    return ''.join([mapping[i] for i in indices])
+def countEmissionProbs(genome, annotation):
+    genome = translate_observations_to_indices(genome)
+    annotation = convertAnnToState(annotation)
+    probs = make_table(noStates,4)
+    for i in range(0,len(genome)):
 
+        probs[annotation[i]][genome[i]] += 1
+    for n in range(0,noStates):
+        total = sum(probs[n])
+        for m in range(0,4):
+            probs[n][m] = probs[n][m]/total
+    return probs
+
+def countTransisionProbs(annotation):
+    annotation = convertAnnToState(annotation)
+    probs = make_table(noStates,noStates)
+    for i in range(0,len(annotation)-1):
+        probs[annotation[i]][annotation[i+1]] += 1
+    for n in range(0,noStates):
+        total = sum(probs[n])
+        for m in range(0,noStates):
+            probs[n][m] = probs[n][m]/total
+    return probs
+
+def viterbi(initialProb, transProbs, emProbs, genome):
+    genome = translate_observations_to_indices(genome)
+    T = len(genome)
+    T1 = make_table(noStates, T)
+    T2 = make_table(noStates, T)
+
+    for i in range(0,noStates):
+        if (emProbs[i][genome[0]] != 0 and initialProb[i] != 0):
+            T1[i][0] = np.log(emProbs[i][genome[0]])+np.log(initialProb[i])
+        T2[i][0] = 0
+
+    p = 0
+    for i in range(1,T):
+        p+=1
+        if p==10000:
+            p=0
+            print(str(int(i/T*100)) + "%")
+        for j in range(0,noStates):
+            best = -np.inf
+            bestk = 0
+
+            for k in range(0,noStates):
+                if transProbs[k][j] != 0:
+                    temp = T1[k][i-1]+np.log(transProbs[k][j])
+
+                #print("T1:" + str(T1[k][i-1]) +"  TransP:"+ str(transProbs[k][j]) +"   emProb:"+ str(emProbs[j][genome[i]]))
+
+                    if temp>best:
+                        best = temp
+                        bestk = k
+            if emProbs[j][genome[i]] != 0:
+                T1[j][i] = best+np.log(emProbs[j][genome[i]])
+            else:
+                T1[j][i] = best
+            T2[j][i] = bestk
+    z=[0]*T
+    x=[0]*T
+    best = 0
+    bestk = 0
+    for k in range(0, noStates):
+        temp = T1[k][T-1]
+        if temp>best:
+            best = temp
+            bestk = k
+    x[T-1] = bestk
+    for j in range(1,T+1):
+        i=T-j
+        x[i-1] = T2[x[i]][i]
+    return x
+
+def translate_indices_to_path(indices):
+    mapping = ['N','C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R']
+    return ''.join([mapping[i] for i in indices])
 def read_fasta_file(filename):
     """
     Reads the given FASTA file f and returns a dictionary of sequences.
@@ -72,7 +145,27 @@ def read_fasta_file(filename):
     for name, lines in sequences_lines.items():
         sequences[name] = ''.join(lines)
     return sequences[list(sequences.keys())[0]]
+def compute_accuracy(true_ann, pred_ann):
+    if len(true_ann) != len(pred_ann):
+        return 2.0
+    return sum(1 if true_ann[i] == pred_ann[i] else 0
+               for i in range(len(true_ann))) / len(true_ann)
+def make_table(m, n):
+    """Make a table with `m` rows and `n` columns filled with zeros."""
+    return [[0] * n for _ in range(m)]
+def translate_observations_to_indices(obs):
+    mapping = {'a': 0, 'c': 1, 'g': 2, 't': 3}
+    return [mapping[symbol.lower()] for symbol in obs]
 
 genome1 = read_fasta_file("genome1.fa")
+genome2 = read_fasta_file("genome5.fa")
 trueann1 = read_fasta_file("true-ann1.fa")
-print(convertAnnToState(trueann1))
+trueann2 = read_fasta_file("true-ann5.fa")
+
+emProbs = countEmissionProbs(genome1,trueann1)
+transProbs = countTransisionProbs(trueann1)
+
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome2)
+result = translate_indices_to_path(result)
+print(result)
+print(compute_accuracy(trueann2,result))
