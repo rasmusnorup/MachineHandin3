@@ -178,11 +178,18 @@ def viterbi(initialProb, transProbs, emProbs, genome):
         x[i-1] = T2[x[i]][i]
     return x
 
-def codonCountEmissionProbs(genome, states):
+def codonCountTransmissionProbs(states):
     probs = make_table(noStates,68)
-    return
 
-def codonGenomeToEmission(genome, states):
+    for i in range(0,len(states)-1):
+        probs[states[i]][states[i+1]] += 1
+    for n in range(0,noStates):
+        total = sum(probs[n])
+        for m in range(0,noStates):
+            probs[n][m] = probs[n][m]/total
+    return probs
+
+def codonCountEmissionProbs(genome, states):
     result = make_table(noStates,len(genome))
     j = 0
     perms = [''.join(i) for i in itertools.product("ACGT", repeat = 3)]
@@ -247,8 +254,8 @@ genome1 = read_fasta_file("genome1.fa")
 trueann1 = read_fasta_file("true-ann1.fa")
 
 #print(codonAnotationToStates(trueann1))
-print(codonGenomeToEmission(genome1,codonAnotationToStates(trueann1)))
-
+#print(codonCountEmissionProbs(genome1,codonAnotationToStates(trueann1)))
+print(codonCountTransmissionProbs(codonAnotationToStates(trueann1)))
 
 #trueann2 = read_fasta_file("true-ann2.fa")
 #ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
