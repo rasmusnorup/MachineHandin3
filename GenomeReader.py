@@ -10,6 +10,7 @@ noStates = 7
 
 
 init_probs_7_state = [0.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00]
+init_probs_codon_state = [1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
 
 trans_probs_7_state = [
     [0.00, 0.00, 0.90, 0.10, 0.00, 0.00, 0.00],
@@ -161,7 +162,10 @@ def viterbi(initialProb, transProbs, emProbs, genome):
                     if temp>best:
                         best = temp
                         bestk = k
-            T1[j][i] = best+np.log(emProbs[j][genome[i]])
+            if emProbs[j][genome[i]] != 0:
+                T1[j][i] = best+np.log(emProbs[j][genome[i]])
+            else:
+                T1[j][i] = best
             T2[j][i] = bestk
     z=[0]*T
     x=[0]*T
@@ -262,9 +266,9 @@ truestates1 = codonAnotationToStates(trueann1)
 genomeIndices1 = codonGenomeToIndices(genome1,truestates1)
 
 #print(codonAnotationToStates(trueann1))
-print(codonCountEmissionProbs(genomeIndices1,truestates1))
-print(codonCountTransmissionProbs(truestates1))
-
+emProbs = codonCountEmissionProbs(genomeIndices1,truestates1)
+transProbs = codonCountTransmissionProbs(truestates1)
+print(viterbi(init_probs_codon_state,transProbs,emProbs,genomeIndices1))
 #trueann2 = read_fasta_file("true-ann2.fa")
 #ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
 #emProbs = countEmissionProbs(genome1,ann1)
