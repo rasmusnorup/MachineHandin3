@@ -92,9 +92,6 @@ def viterbi(initialProb, transProbs, emProbs, genome):
             for k in range(0,noStates):
                 if transProbs[k][j] != 0:
                     temp = T1[k][i-1]+np.log(transProbs[k][j])
-
-                #print("T1:" + str(T1[k][i-1]) +"  TransP:"+ str(transProbs[k][j]) +"   emProb:"+ str(emProbs[j][genome[i]]))
-
                     if temp>best:
                         best = temp
                         bestk = k
@@ -147,7 +144,7 @@ def read_fasta_file(filename):
     return sequences[list(sequences.keys())[0]]
 def compute_accuracy(true_ann, pred_ann):
     if len(true_ann) != len(pred_ann):
-        return 2.0
+        return -1.0
     return sum(1 if true_ann[i] == pred_ann[i] else 0
                for i in range(len(true_ann))) / len(true_ann)
 def make_table(m, n):
@@ -156,6 +153,9 @@ def make_table(m, n):
 def translate_observations_to_indices(obs):
     mapping = {'a': 0, 'c': 1, 'g': 2, 't': 3}
     return [mapping[symbol.lower()] for symbol in obs]
+
+def saveFasta(filename, annotation):
+    file = write(">" + filename + "\n")
 
 genome1 = read_fasta_file("genome1.fa")
 genome2 = read_fasta_file("genome2.fa")
