@@ -207,7 +207,7 @@ def codonAnotationToStates(annotation):
             else:
                 if annotation[i + 3] != "R":
                     result.append(4)
-                    isCoding = False
+                    isRCoding = False
                 else:
                     result.append(5)
             i += 3
@@ -217,15 +217,22 @@ def codonAnotationToStates(annotation):
 # state 0=noncoding, 1=start, 2=code, 3=stop, 4=Rstart, 5=Rcode, 6=Rstop
 # Remember that Rstop comes before Rstart
 
+
+
 genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa"))
-genome2 = translate_observations_to_indices(read_fasta_file("genome2.fa"))
+#genome2 = translate_observations_to_indices(read_fasta_file("genome2.fa"))
 trueann1 = read_fasta_file("true-ann1.fa")
-trueann2 = read_fasta_file("true-ann2.fa")
-ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
-emProbs = countEmissionProbs(genome1,ann1)
-transProbs = countTransisionProbs(ann1)
-result = viterbi(init_probs_7_state,transProbs,emProbs,genome2)
-learnann=translate_indices_to_path(result)
-print(compute_accuracy(trueann2,learnann))
+
+print(codonAnotationToStates(trueann1))
+
+
+
+#trueann2 = read_fasta_file("true-ann2.fa")
+#ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
+#emProbs = countEmissionProbs(genome1,ann1)
+#transProbs = countTransisionProbs(ann1)
+#result = viterbi(init_probs_7_state,transProbs,emProbs,genome2)
+#learnann=translate_indices_to_path(result)
+#print(compute_accuracy(trueann2,learnann))
 #print(result)
 #print(translate_indices_to_path(result))
