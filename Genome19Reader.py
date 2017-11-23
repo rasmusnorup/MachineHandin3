@@ -84,7 +84,7 @@ def viterbi(initialProb, transProbs, emProbs, genome):
         p+=1
         if p==10000:
             p=0
-            print(str(int(i/T*100)) + "%")
+            #print(str(int(i/T*100)) + "%")
         for j in range(0,noStates):
             best = -np.inf
             bestk = 0
@@ -184,7 +184,42 @@ trueann5 = read_fasta_file("true-ann5.fa")
 trueanns = trueann1 + trueann2 + trueann3 + trueann4 + trueann5
 
 
+genomev = genome2 + genome3 + genome4 + genome5
+trueannv = trueann2 + trueann3 + trueann4 + trueann5
+emProbs = countEmissionProbs(genomev,trueannv)
+transProbs = countTransisionProbs(trueannv)
+trainedAnn = trueann1,viterbi(init_probs_19_state,transProbs,emProbs,genome1)
+print("testing on genome 1, with accuracy: " + str(compute_accuracy(trainedAnn)))
 
+genomev = genome1 + genome3 + genome4 + genome5
+trueannv = trueann1 + trueann3 + trueann4 + trueann5
+emProbs = countEmissionProbs(genomev,trueannv)
+transProbs = countTransisionProbs(trueannv)
+trainedAnn = trueann2,viterbi(init_probs_19_state,transProbs,emProbs,genome2)
+print("testing on genome 2, with accuracy: " + str(compute_accuracy(trainedAnn)))
+
+genomev = genome2 + genome1 + genome4 + genome5
+trueannv = trueann2 + trueann1 + trueann4 + trueann5
+emProbs = countEmissionProbs(genomev,trueannv)
+transProbs = countTransisionProbs(trueannv)
+trainedAnn = trueann3,viterbi(init_probs_19_state,transProbs,emProbs,genome3)
+print("testing on genome 3, with accuracy: " + str(compute_accuracy(trainedAnn)))
+
+genomev = genome2 + genome3 + genome1 + genome5
+trueannv = trueann2 + trueann3 + trueann1 + trueann5
+emProbs = countEmissionProbs(genomev,trueannv)
+transProbs = countTransisionProbs(trueannv)
+trainedAnn = trueann1,viterbi(init_probs_19_state,transProbs,emProbs,genome4)
+print("testing on genome 4, with accuracy: " + str(compute_accuracy(trainedAnn)))
+
+genomev = genome2 + genome3 + genome4 + genome1
+trueannv = trueann2 + trueann3 + trueann4 + trueann1
+emProbs = countEmissionProbs(genomev,trueannv)
+transProbs = countTransisionProbs(trueannv)
+trainedAnn = trueann1,viterbi(init_probs_19_state,transProbs,emProbs,genome5)
+print("testing on genome 5, with accuracy: " + str(compute_accuracy(trainedAnn)))
+
+"""
 emProbs = countEmissionProbs(genomes,trueanns)
 transProbs = countTransisionProbs(trueanns)
 
@@ -212,3 +247,4 @@ genome10 = read_fasta_file("genome10.fa")
 result = viterbi(init_probs_19_state, transProbs, emProbs, genome10)
 result = translate_indices_to_path(result)
 saveFasta("pred-ann10",result)
+"""
