@@ -81,7 +81,7 @@ def make_table(m, n):
 
 def compute_accuracy(true_ann, pred_ann):
     if len(true_ann) != len(pred_ann):
-        return 0.0
+        return 2.0
     return sum(1 if true_ann[i] == pred_ann[i] else 0
                for i in range(len(true_ann))) / len(true_ann)
 
@@ -253,22 +253,41 @@ def codonGenomeToIndices(genome,states):
             j += 3
     return result
 
+def codonStatesToAnnotation(states):
+    result = ""
+    map = {0:"N",1:"CCC",2:"CCC",3:"CCC",4:"RRR",5:"RRR",6:"RRR"}
+    for i in range (0,len(states)):
+        result = result + (map[states[i]])
+    return result
+
 # state 0=noncoding, 1=start, 2=code, 3=stop, 4=Rstart, 5=Rcode, 6=Rstop
 # Remember that Rstop comes before Rstart
 
 
 
 genome1 = read_fasta_file("genome1.fa")
+genomes = read_fasta_file("genome1.fa") + read_fasta_file("genome2.fa")
 
 #genome2 = translate_observations_to_indices(read_fasta_file("genome2.fa"))
 trueann1 = read_fasta_file("true-ann1.fa")
+trueanns = read_fasta_file("true-ann1.fa") + read_fasta_file("true-ann2.fa")
 truestates1 = codonAnotationToStates(trueann1)
+truestates = codonAnotationToStates(trueanns)
+genomeIndices = codonGenomeToIndices(genomes,truestates)
 genomeIndices1 = codonGenomeToIndices(genome1,truestates1)
 
 #print(codonAnotationToStates(trueann1))
-emProbs = codonCountEmissionProbs(genomeIndices1,truestates1)
-transProbs = codonCountTransmissionProbs(truestates1)
-print(viterbi(init_probs_codon_state,transProbs,emProbs,genomeIndices1))
+emProbs = codonCountEmissionProbs(genomeIndices,truestates)
+transProbs = codonCountTransmissionProbs(truestates)
+learnStates = viterbi(init_probs_codon_state,transProbs,emProbs,genomeIndices1)
+
+
+learnedAnnotation = codonStatesToAnnotation(learnStates)
+print(str(len(trueann1)))
+print(str(len(learnedAnnotation)))
+print(compute_accuracy(trueann1,codonStatesToAnnotation(learnStates)))
+
+
 #trueann2 = read_fasta_file("true-ann2.fa")
 #ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
 #emProbs = countEmissionProbs(genome1,ann1)
