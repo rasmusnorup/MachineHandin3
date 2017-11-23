@@ -189,19 +189,10 @@ def codonCountTransmissionProbs(states):
             probs[n][m] = probs[n][m]/total
     return probs
 
-def codonCountEmissionProbs(genome, states):
-    result = make_table(noStates,len(genome))
-    j = 0
-    perms = [''.join(i) for i in itertools.product("ACGT", repeat = 3)]
-    singleMap = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
-    mapping = dict(zip(perms, range(4,68)))
-    for i in range(0,len(states)):
-        if states[i] == 0:
-            result[states[i]][singleMap[genome[j]]] += 1
-            j += 1
-        else:
-            result[states[i]][mapping[genome[j]+genome[j+1]+genome[j+2]]] += 1
-            j += 3
+def codonCountEmissionProbs(genomeIndices, states):
+    result = make_table(noStates,68)
+    for i in range(0, len(states)):
+        result[states[i]][genomeIndices[i]] += 1
     for n in range(0,noStates):
         total = sum(result[n])
         for m in range(0,68):
@@ -243,6 +234,20 @@ def codonAnotationToStates(annotation):
             i += 3
     return result
 
+def codonGenomeToIndices(genome,states):
+    result = []
+    perms = [''.join(i) for i in itertools.product("ACGT", repeat=3)]
+    singleMap = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
+    mapping = dict(zip(perms, range(4, 68)))
+    j = 0
+    for i in range(0, len(states)):
+        if states[i] == 0:
+            result.append(singleMap[genome[j]])
+            j += 1
+        else:
+            result.append(mapping[genome[j] + genome[j + 1] + genome[j + 2]])
+            j += 3
+    return result
 
 # state 0=noncoding, 1=start, 2=code, 3=stop, 4=Rstart, 5=Rcode, 6=Rstop
 # Remember that Rstop comes before Rstart
@@ -250,12 +255,15 @@ def codonAnotationToStates(annotation):
 
 
 genome1 = read_fasta_file("genome1.fa")
+
 #genome2 = translate_observations_to_indices(read_fasta_file("genome2.fa"))
 trueann1 = read_fasta_file("true-ann1.fa")
+truestates1 = codonAnotationToStates(trueann1)
+genomeIndices1 = codonGenomeToIndices(genome1,truestates1)
 
 #print(codonAnotationToStates(trueann1))
-#print(codonCountEmissionProbs(genome1,codonAnotationToStates(trueann1)))
-print(codonCountTransmissionProbs(codonAnotationToStates(trueann1)))
+print(codonCountEmissionProbs(genomeIndices1,truestates1))
+print(codonCountTransmissionProbs(truestates1))
 
 #trueann2 = read_fasta_file("true-ann2.fa")
 #ann1 = convertAnnToState(read_fasta_file("true-ann1.fa"))
