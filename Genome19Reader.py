@@ -188,36 +188,36 @@ genomev = genome2 + genome3 + genome4 + genome5
 trueannv = trueann2 + trueann3 + trueann4 + trueann5
 emProbs = countEmissionProbs(genomev,trueannv)
 transProbs = countTransisionProbs(trueannv)
-trainedAnn = trueann1,viterbi(init_probs_19_state,transProbs,emProbs,genome1)
-print("testing on genome 1, with accuracy: " + str(compute_accuracy(trainedAnn)))
+trainedAnn = viterbi(init_probs_19_state,transProbs,emProbs,genome1)
+print("testing on genome 1, with accuracy: " + str(compute_accuracy(trueann1,trainedAnn)))
 
 genomev = genome1 + genome3 + genome4 + genome5
 trueannv = trueann1 + trueann3 + trueann4 + trueann5
 emProbs = countEmissionProbs(genomev,trueannv)
 transProbs = countTransisionProbs(trueannv)
-trainedAnn = trueann2,viterbi(init_probs_19_state,transProbs,emProbs,genome2)
-print("testing on genome 2, with accuracy: " + str(compute_accuracy(trainedAnn)))
+trainedAnn = viterbi(init_probs_19_state,transProbs,emProbs,genome2)
+print("testing on genome 2, with accuracy: " + str(compute_accuracy(trueann2,trainedAnn)))
 
 genomev = genome2 + genome1 + genome4 + genome5
 trueannv = trueann2 + trueann1 + trueann4 + trueann5
 emProbs = countEmissionProbs(genomev,trueannv)
 transProbs = countTransisionProbs(trueannv)
-trainedAnn = trueann3,viterbi(init_probs_19_state,transProbs,emProbs,genome3)
-print("testing on genome 3, with accuracy: " + str(compute_accuracy(trainedAnn)))
+trainedAnn = viterbi(init_probs_19_state,transProbs,emProbs,genome3)
+print("testing on genome 3, with accuracy: " + str(compute_accuracy(trueann3,trainedAnn)))
 
 genomev = genome2 + genome3 + genome1 + genome5
 trueannv = trueann2 + trueann3 + trueann1 + trueann5
 emProbs = countEmissionProbs(genomev,trueannv)
 transProbs = countTransisionProbs(trueannv)
-trainedAnn = trueann1,viterbi(init_probs_19_state,transProbs,emProbs,genome4)
-print("testing on genome 4, with accuracy: " + str(compute_accuracy(trainedAnn)))
+trainedAnn = viterbi(init_probs_19_state,transProbs,emProbs,genome4)
+print("testing on genome 4, with accuracy: " + str(compute_accuracy(trueann4,trainedAnn)))
 
 genomev = genome2 + genome3 + genome4 + genome1
 trueannv = trueann2 + trueann3 + trueann4 + trueann1
 emProbs = countEmissionProbs(genomev,trueannv)
 transProbs = countTransisionProbs(trueannv)
-trainedAnn = trueann1,viterbi(init_probs_19_state,transProbs,emProbs,genome5)
-print("testing on genome 5, with accuracy: " + str(compute_accuracy(trainedAnn)))
+trainedAnn = viterbi(init_probs_19_state,transProbs,emProbs,genome5)
+print("testing on genome 5, with accuracy: " + str(compute_accuracy(trueann5,trainedAnn)))
 
 """
 emProbs = countEmissionProbs(genomes,trueanns)
