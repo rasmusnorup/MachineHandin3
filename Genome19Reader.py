@@ -155,13 +155,17 @@ def translate_observations_to_indices(obs):
     return [mapping[symbol.lower()] for symbol in obs]
 
 def saveFasta(filename, annotation):
-    file = open(filename ,'w')
-    file.write( ">" + filename )
+    file = open(filename + ".fa",'w')
+    file.write( ">" + filename + "\n")
     i= 0
-
+    string = ""
     while i < len(annotation):
-        file.write(annotation[range(i,i+60)])
+        for j in range(0,60):
+            if i+j < len(annotation):
+                string = string + annotation[i+j]
+        file.write(string + "\n")
         i = i+60
+        string = ""
     file.close()
 
 
@@ -186,10 +190,8 @@ trueann4 = read_fasta_file("true-ann4.fa")
 trueann5 = read_fasta_file("true-ann5.fa")
 trueanns = trueann1 + trueann2 + trueann3 + trueann4 + trueann5
 
-saveFasta("true-ann6.fa", trueann1 )
-trueann6 = read_fasta_file("true-ann6.fa")
-compute_accuracy(trueann1, trueann6)
-"""
+
+
 emProbs = countEmissionProbs(genomes,trueanns)
 transProbs = countTransisionProbs(trueanns)
 
@@ -197,4 +199,3 @@ result = viterbi(init_probs_19_state, transProbs, emProbs, genome5)
 result = translate_indices_to_path(result)
 print(result)
 print(compute_accuracy(trueann5,result))
-"""
