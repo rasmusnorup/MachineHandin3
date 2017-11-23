@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 
 class hmm:
     def __init__(self, init_probs, trans_probs, emission_probs):
@@ -177,7 +178,29 @@ def viterbi(initialProb, transProbs, emProbs, genome):
         x[i-1] = T2[x[i]][i]
     return x
 
-#def codonCountEmissionProbs(genome, states):
+def codonCountEmissionProbs(genome, states):
+    probs = make_table(noStates,68)
+    return
+
+def codonGenomeToEmission(genome, states):
+    result = make_table(noStates,len(genome))
+    j = 0
+    perms = [''.join(i) for i in itertools.product("ACGT", repeat = 3)]
+    singleMap = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
+    mapping = dict(zip(perms, range(4,68)))
+    for i in range(0,len(states)):
+        if states[i] == 0:
+            result[states[i]][singleMap[genome[j]]] += 1
+            j += 1
+        else:
+            result[states[i]][mapping[genome[j]+genome[j+1]+genome[j+2]]] += 1
+            j += 3
+    for n in range(0,noStates):
+        total = sum(result[n])
+        for m in range(0,68):
+            result[n][m] = result[n][m]/total
+    return result
+
 
 
 def codonAnotationToStates(annotation):
@@ -219,12 +242,12 @@ def codonAnotationToStates(annotation):
 
 
 
-genome1 = translate_observations_to_indices(read_fasta_file("genome1.fa"))
+genome1 = read_fasta_file("genome1.fa")
 #genome2 = translate_observations_to_indices(read_fasta_file("genome2.fa"))
 trueann1 = read_fasta_file("true-ann1.fa")
 
-print(codonAnotationToStates(trueann1))
-
+#print(codonAnotationToStates(trueann1))
+print(codonGenomeToEmission(genome1,codonAnotationToStates(trueann1)))
 
 
 #trueann2 = read_fasta_file("true-ann2.fa")
