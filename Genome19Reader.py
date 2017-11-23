@@ -158,14 +158,24 @@ def translate_observations_to_indices(obs):
     return [mapping[symbol.lower()] for symbol in obs]
 
 genome1 = read_fasta_file("genome1.fa")
-genome2 = read_fasta_file("genome5.fa")
+genome2 = read_fasta_file("genome2.fa")
+genome3 = read_fasta_file("genome3.fa")
+genome4 = read_fasta_file("genome4.fa")
+genome5 = read_fasta_file("genome5.fa")
+genomes = genome1 + genome2 + genome3 + genome4 + genome5
+
+
 trueann1 = read_fasta_file("true-ann1.fa")
-trueann2 = read_fasta_file("true-ann5.fa")
+trueann2 = read_fasta_file("true-ann2.fa")
+trueann3 = read_fasta_file("true-ann3.fa")
+trueann4 = read_fasta_file("true-ann4.fa")
+trueann5 = read_fasta_file("true-ann5.fa")
+trueanns = trueann1 + trueann2 + trueann3 + trueann4 + trueann5
 
-emProbs = countEmissionProbs(genome1,trueann1)
-transProbs = countTransisionProbs(trueann1)
+emProbs = countEmissionProbs(genomes,trueanns)
+transProbs = countTransisionProbs(trueanns)
 
-result = viterbi(init_probs_19_state, transProbs, emProbs, genome2)
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome5)
 result = translate_indices_to_path(result)
 print(result)
-print(compute_accuracy(trueann2,result))
+print(compute_accuracy(trueann5,result))
