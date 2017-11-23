@@ -155,7 +155,11 @@ def translate_observations_to_indices(obs):
     return [mapping[symbol.lower()] for symbol in obs]
 
 def saveFasta(filename, annotation):
-    file = write(">" + filename + "\n")
+    file = open(filename,'w')
+    file.write( ">" + filename + "\n")
+    for i in range(0,len(annotation),60):
+        
+
 
 genome1 = read_fasta_file("genome1.fa")
 genome2 = read_fasta_file("genome2.fa")
