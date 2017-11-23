@@ -168,13 +168,6 @@ def saveFasta(filename, annotation):
         string = ""
     file.close()
 
-
-
-
-
-        
-
-
 genome1 = read_fasta_file("genome1.fa")
 genome2 = read_fasta_file("genome2.fa")
 genome3 = read_fasta_file("genome3.fa")
@@ -200,3 +193,22 @@ result = viterbi(init_probs_19_state, transProbs, emProbs, genome6)
 result = translate_indices_to_path(result)
 saveFasta("pred-ann6",result)
 
+genome7 = read_fasta_file("genome7.fa")
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome7)
+result = translate_indices_to_path(result)
+saveFasta("pred-ann7",result)
+
+genome8 = read_fasta_file("genome8.fa")
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome8)
+result = translate_indices_to_path(result)
+saveFasta("pred-ann8",result)
+
+genome9 = read_fasta_file("genome9.fa")
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome9)
+result = translate_indices_to_path(result)
+saveFasta("pred-ann9",result)
+
+genome10 = read_fasta_file("genome10.fa")
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome10)
+result = translate_indices_to_path(result)
+saveFasta("pred-ann10",result)
