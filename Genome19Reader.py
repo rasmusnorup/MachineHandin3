@@ -195,7 +195,8 @@ trueanns = trueann1 + trueann2 + trueann3 + trueann4 + trueann5
 emProbs = countEmissionProbs(genomes,trueanns)
 transProbs = countTransisionProbs(trueanns)
 
-result = viterbi(init_probs_19_state, transProbs, emProbs, genome5)
+genome6 = read_fasta_file("genome6.fa")
+result = viterbi(init_probs_19_state, transProbs, emProbs, genome6)
 result = translate_indices_to_path(result)
-print(result)
-print(compute_accuracy(trueann5,result))
+saveFasta("pred-ann6",result)
+
